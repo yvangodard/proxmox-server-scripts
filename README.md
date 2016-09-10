@@ -16,30 +16,30 @@ The Proxmox “No Valid Subscription” message re-appears after each Proxmox so
 
 ###### How it works:
 
-`proxmox_noreminder.sh`: this script automatically removes the Proxmox 3.4 “No Valid Subscription” message on upgrades by watching the relevant directory with ```incron```. Incron is watching the directory, as it seems to trigger more reliably than watching only the file. A few files in this directory are replaced during each upgrade, but only one needs to be patched in this edition of Proxmox. The script also patches the Proxmox Support Tab with a more friendly message.
+`proxmox_noreminder.sh`: this script automatically removes the Proxmox 3.4 “No Valid Subscription” message on upgrades by watching the relevant directory with `incron`. Incron is watching the directory, as it seems to trigger more reliably than watching only the file. A few files in this directory are replaced during each upgrade, but only one needs to be patched in this edition of Proxmox. The script also patches the Proxmox Support Tab with a more friendly message.
 
 ###### How to install:
 
-- Check your /etc/apt/sources.list and make sure, that you are actually getting updates from the free [Proxmox repository](https://pve.proxmox.com/wiki/Package_repositories):
-		```
-		echo "deb http://download.proxmox.com/debian wheezy pve-no-subscription" >> /etc/apt/sources.list
-		```
+- Check your `/etc/apt/sources.list` and make sure, that you are actually getting updates from the free [Proxmox repository](https://pve.proxmox.com/wiki/Package_repositories):
+
+	`echo "deb http://download.proxmox.com/debian wheezy pve-no-subscription" >> /etc/apt/sources.list`
+		
 - Initially backup & patch the files manually and confirm with diff, that the changes are as expected:
-	```
-	wget http://bit.ly/proxmox_noreminder_init && mv proxmox_noreminder_init proxmox_noreminder_init.sh && chmod +x proxmox_noreminder_init.sh && ./proxmox_noreminder_init.sh
-	```
+
+	`wget http://bit.ly/proxmox_noreminder_init && mv proxmox_noreminder_init proxmox_noreminder_init.sh && chmod +x proxmox_noreminder_init.sh && ./proxmox_noreminder_init.sh`
+
 - Test with (in another terminal):
-```
-tail -f /var/log/syslog | grep incrond
-```
-Reinstalling pve-manager should trigger incron:
-```
-apt-get install --reinstall pve-manager
-```
-and after, have a look to 
-```
-tail -n 30 -f /var/log/incron.log
-```
+
+	`tail -f /var/log/syslog | grep incrond`
+	
+	Reinstalling pve-manager should trigger incron:
+	
+	`apt-get install --reinstall pve-manager`
+	
+	and after, have a look to 
+	
+	`tail -n 30 -f /var/log/incron.log`
+
 
 
 ###### Disclaimer:
@@ -47,4 +47,4 @@ tail -n 30 -f /var/log/incron.log
 
 ---
 ###### License:
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
