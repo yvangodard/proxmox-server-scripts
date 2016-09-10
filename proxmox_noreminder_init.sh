@@ -24,6 +24,10 @@ echo "****************************** `date` ******************************"
 echo "${scriptName} démarré..."
 echo ""
 
+echo "Nous allons installer CURL si ce n'est pas déjà fait..."
+apt-get install curl
+echo ""
+
 # Changement du séparateur par défaut et mise à jour auto
 OLDIFS=$IFS
 IFS=$'\n'
@@ -46,10 +50,6 @@ if [[ $(checkUrl ${githubRemoteScript}) -eq 0 ]] && [[ $(md5 -q "$0") != $(curl 
 	echo ""
 fi
 IFS=$OLDIFS
-
-echo ""
-echo "Nous allons installer CURL si ce n'est pas déjà fait..."
-apt-get install curl
 
 echo ""
 echo "Nous allons installer INCRON si ce n'est pas déjà fait..."
