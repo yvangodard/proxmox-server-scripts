@@ -61,16 +61,38 @@ echo "Nous allons créer le dossier /etc/incron.scripts si ce n'est pas déjà f
 [[ ! -d /etc/incron.scripts ]] && mkdir -v "/etc/incron.scripts"
 
 echo ""
+echo "Nous activons le script via INCRON"
+[[ ! -e /var/spool/incron/root ]] && \
+	touch /var/spool/incron/root && \
+	echo "/usr/share/pve-manager/ext6/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#" >> /var/spool/incron/root && \
+	/etc/init.d/incron restart
+
+cat /var/spool/incron/root | grep '/usr/share/pve-manager/ext6/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#' > /dev/null 2>&1
+[ $? -ne 0 ] && \
+	echo "/usr/share/pve-manager/ext6/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#" >> /var/spool/incron/root && \
+	/etc/init.d/incron restart
+
+echo ""
 echo "On installe proxmox_noreminder.sh dans /etc/incron.scripts si ce n'est pas déjà fait..."
 [[ -e /etc/incron.scripts/proxmox_noreminder.sh ]] && rm -R /etc/incron.scripts/proxmox_noreminder.sh
 curl -Lsf https://raw.githubusercontent.com/yvangodard/proxmox-server-scripts/master/proxmox_noreminder.sh >> /etc/incron.scripts/proxmox_noreminder.sh
 chmod +x /etc/incron.scripts/proxmox_noreminder.sh
 
+echo ""
+echo "Nous faisons un backup du fichier /usr/share/pve-manager/ext6/pvemanagerlib.js vers /usr/share/pve-manager/ext6/pvemanagerlib.js.bak"
 cp /usr/share/pve-manager/ext6/pvemanagerlib.js /usr/share/pve-manager/ext6/pvemanagerlib.js.bak
+
+echo ""
+echo "Nous patchons le fichier /usr/share/pve-manager/ext6/pvemanagerlib.js..."
 sed -i -r -e "s/if \(data.status !== 'Active'\) \{/if (false) {/" /usr/share/pve-manager/ext6/pvemanagerlib.js 
 sed -i -r -e "s/You do not have a valid subscription for this server/This server is receiving updates from the Proxmox VE No-Subscription Repository/" /usr/share/pve-manager/ext6/pvemanagerlib.js 
 sed -i -r -e "s/No valid subscription/Community Edition/" /usr/share/pve-manager/ext6/pvemanagerlib.js
 
+echo ""
+echo "Voici les modifications apportées sur le fichier /usr/share/pve-manager/ext6/pvemanagerlib.js"
 diff /usr/share/pve-manager/ext6/pvemanagerlib.js.bak /usr/share/pve-manager/ext6/pvemanagerlib.js
+
+echo ""
+echo "Porcessus terminé !"
 
 exit 0
