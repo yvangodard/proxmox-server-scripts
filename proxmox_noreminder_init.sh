@@ -32,7 +32,7 @@ echo ""
 OLDIFS=$IFS
 IFS=$'\n'
 # Auto-update script
-if [[ $(checkUrl ${githubRemoteScript}) -eq 0 ]] && [[ $(md5 -q "$0") != $(curl -Lsf ${githubRemoteScript} | md5 -q) ]]; then
+if [[ $(checkUrl ${githubRemoteScript}) -eq 0 ]] && [[ $(md5sum "$0" | awk '{print $1}') != $(curl -Lsf ${githubRemoteScript} | md5sum | awk '{print $1}') ]]; then
 	[[ -e "$0".old ]] && rm "$0".old
 	mv "$0" "$0".old
 	curl -Lsf ${githubRemoteScript} >> "$0"
