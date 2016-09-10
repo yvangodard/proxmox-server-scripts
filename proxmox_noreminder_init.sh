@@ -9,8 +9,8 @@ githubRemoteScript="https://raw.githubusercontent.com/yvangodard/proxmox-server-
 
 # Exécutable seulement par root
 if [ `whoami` != 'root' ]; then
-	echo "Ce script doit être utilisé par le compte root. Utilisez 'sudo'."
-	exit 1
+    echo "This tool have to be launched by root. Please use 'sudo'."
+    exit 1
 fi
 
 # Check URL
@@ -21,7 +21,7 @@ function checkUrl() {
 
 echo ""
 echo "****************************** `date` ******************************"
-echo "${scriptName} démarré..."
+echo "${scriptName} launched..."
 echo ""
 
 echo "Nous allons installer CURL si ce n'est pas déjà fait..."
