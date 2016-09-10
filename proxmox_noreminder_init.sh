@@ -83,12 +83,12 @@ echo "On installe proxmox_noreminder.sh dans /etc/incron.scripts si ce n'est pas
 curl -Lsf https://raw.githubusercontent.com/yvangodard/proxmox-server-scripts/master/proxmox_noreminder.sh >> /etc/incron.scripts/proxmox_noreminder.sh
 chmod +x /etc/incron.scripts/proxmox_noreminder.sh
 
-echo ""
-echo "Nous faisons un backup du fichier /usr/share/pve-manager/ext6/pvemanagerlib.js vers /usr/share/pve-manager/ext6/pvemanagerlib.js.bak"
-cp /usr/share/pve-manager/ext6/pvemanagerlib.js /usr/share/pve-manager/ext6/pvemanagerlib.js.bak
-
 cat /usr/share/pve-manager/ext6/pvemanagerlib.js | grep "data.status\ !==\ 'Active'" > /dev/null 2>&1
-if [ $? -ne 0 ]; then
+if [ $? -eq 0 ]; then
+	echo ""
+	echo "Nous faisons un backup du fichier /usr/share/pve-manager/ext6/pvemanagerlib.js vers /usr/share/pve-manager/ext6/pvemanagerlib.js.bak"
+	cp /usr/share/pve-manager/ext6/pvemanagerlib.js /usr/share/pve-manager/ext6/pvemanagerlib.js.bak
+
 	echo ""
 	echo "Nous patchons le fichier /usr/share/pve-manager/ext6/pvemanagerlib.js..."
 	sed -i -r -e "s/if \(data.status !== 'Active'\) \{/if (false) {/" /usr/share/pve-manager/ext6/pvemanagerlib.js 
