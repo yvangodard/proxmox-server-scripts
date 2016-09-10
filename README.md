@@ -24,12 +24,12 @@ echo "deb http://download.proxmox.com/debian wheezy pve-no-subscription" >> /etc
 
 Initially backup & patch the files manually and confirm with diff, that the changes are as expected:
 ```
-cp /usr/share/pve-manager/ext4/pvemanagerlib.js /usr/share/pve-manager/ext4/pvemanagerlib.js.bak
-sed -i -r -e "s/if \(data.status !== 'Active'\) \{/if (false) {/" /usr/share/pve-manager/ext4/pvemanagerlib.js 
-sed -i -r -e "s/You do not have a valid subscription for this server/This server is receiving updates from the Proxmox VE No-Subscription Repository/" /usr/share/pve-manager/ext4/pvemanagerlib.js 
-sed -i -r -e "s/No valid subscription/Community Edition/" /usr/share/pve-manager/ext4/pvemanagerlib.js
+cp /usr/share/pve-manager/ext6/pvemanagerlib.js /usr/share/pve-manager/ext6/pvemanagerlib.js.bak
+sed -i -r -e "s/if \(data.status !== 'Active'\) \{/if (false) {/" /usr/share/pve-manager/ext6/pvemanagerlib.js 
+sed -i -r -e "s/You do not have a valid subscription for this server/This server is receiving updates from the Proxmox VE No-Subscription Repository/" /usr/share/pve-manager/ext6/pvemanagerlib.js 
+sed -i -r -e "s/No valid subscription/Community Edition/" /usr/share/pve-manager/ext6/pvemanagerlib.js
 
-diff /usr/share/pve-manager/ext4/pvemanagerlib.js.bak /usr/share/pve-manager/ext4/pvemanagerlib.js
+diff /usr/share/pve-manager/ext6/pvemanagerlib.js.bak /usr/share/pve-manager/ext6/pvemanagerlib.js
 ```
 
 Install Incron and only allow the root user
@@ -49,7 +49,7 @@ Add the following in incrontab
 ```
 incrontab -e
 ...
-/usr/share/pve-manager/ext4/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#
+/usr/share/pve-manager/ext6/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#
 ```
 
 Test with (in another terminal):
@@ -62,8 +62,6 @@ Reinstalling pve-manager should trigger incron:
 apt-get install --reinstall pve-manager
 ```
 
-##### Note:
-Since Proxmox 4.2 the relevant files have been moved from `pve-manager/ext4` to `pve-manager/ext6`. This has not been changed in the script yet.
 
 ###### Disclaimer:
 *The above scripts & patches may have unforeseen consequences and automatic patching could harm your system. Always backup your Proxmox system before applying such changes! Proxmox may change the code at any time, making the patches useless or even counterproductive. Please make sure you understand the code before applying it to your system. Also, IANAL, and in my opinion the above Proxmox patches are permitted under the GPL, but if want to make sure, please consult a copyright lawyer in your jurisdiction. This disclaimer should not be interpreted as legal advice.*
