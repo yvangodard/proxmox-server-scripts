@@ -69,7 +69,7 @@ echo ""
 echo "Nous activons le script via INCRON"
 [[ ! -e /var/spool/incron/root ]] && \
 	touch /var/spool/incron/root && \
-	echo "/usr/share/pve-manager/ext6/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#" >> /var/spool/incron/root && \
+	echo '/usr/share/pve-manager/ext6/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#' >> /var/spool/incron/root && \
 	/etc/init.d/incron restart
 
 cat /var/spool/incron/root | grep '/usr/share/pve-manager/ext6/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#' > /dev/null 2>&1
