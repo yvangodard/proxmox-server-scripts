@@ -82,17 +82,25 @@ echo ""
 echo "Nous faisons un backup du fichier /usr/share/pve-manager/ext6/pvemanagerlib.js vers /usr/share/pve-manager/ext6/pvemanagerlib.js.bak"
 cp /usr/share/pve-manager/ext6/pvemanagerlib.js /usr/share/pve-manager/ext6/pvemanagerlib.js.bak
 
-echo ""
-echo "Nous patchons le fichier /usr/share/pve-manager/ext6/pvemanagerlib.js..."
-sed -i -r -e "s/if \(data.status !== 'Active'\) \{/if (false) {/" /usr/share/pve-manager/ext6/pvemanagerlib.js 
-sed -i -r -e "s/You do not have a valid subscription for this server/This server is receiving updates from the Proxmox VE No-Subscription Repository/" /usr/share/pve-manager/ext6/pvemanagerlib.js 
-sed -i -r -e "s/No valid subscription/Community Edition/" /usr/share/pve-manager/ext6/pvemanagerlib.js
+cat /usr/share/pve-manager/ext6/pvemanagerlib.js | grep "data.status\ !==\ 'Active'" > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+	echo ""
+	echo "Nous patchons le fichier /usr/share/pve-manager/ext6/pvemanagerlib.js..."
+	sed -i -r -e "s/if \(data.status !== 'Active'\) \{/if (false) {/" /usr/share/pve-manager/ext6/pvemanagerlib.js 
+	sed -i -r -e "s/You do not have a valid subscription for this server/This server is receiving updates from the Proxmox VE No-Subscription Repository/" /usr/share/pve-manager/ext6/pvemanagerlib.js 
+	sed -i -r -e "s/No valid subscription/Community Edition/" /usr/share/pve-manager/ext6/pvemanagerlib.js
 
-echo ""
-echo "Voici les modifications apportées sur le fichier /usr/share/pve-manager/ext6/pvemanagerlib.js"
-diff /usr/share/pve-manager/ext6/pvemanagerlib.js.bak /usr/share/pve-manager/ext6/pvemanagerlib.js
+	echo ""
+	echo "Voici les modifications apportées sur le fichier /usr/share/pve-manager/ext6/pvemanagerlib.js"
+	diff /usr/share/pve-manager/ext6/pvemanagerlib.js.bak /usr/share/pve-manager/ext6/pvemanagerlib.js
 
-echo ""
-echo "Porcessus terminé !"
+	echo ""
+	echo "Porcessus terminé !"
+else
+	echo ""
+	echo "Le fichier /usr/share/pve-manager/ext6/pvemanagerlib.js semble déjà patché."
+	echo "Nous arrêtons le processus ici, merci de vérifier manuellement."
+	exit 1
+fi
 
 exit 0
