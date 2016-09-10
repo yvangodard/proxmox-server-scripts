@@ -19,6 +19,11 @@ function checkUrl() {
   echo "$?"
 }
 
+echo ""
+echo "****************************** `date` ******************************"
+echo "${scriptName} démarré..."
+echo ""
+
 # Changement du séparateur par défaut et mise à jour auto
 OLDIFS=$IFS
 IFS=$'\n'
