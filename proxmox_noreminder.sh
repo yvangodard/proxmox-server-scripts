@@ -2,7 +2,7 @@
 # automatic removal of Proxmox subscription reminder during upgrades
 
 # Variables initialisation
-version="proxmoxNoReminder v0.1 - 2016, Yvan Godard [godardyvan@gmail.com]"
+version="proxmoxNoReminder v0.2 - 2016, Yvan Godard [godardyvan@gmail.com]"
 scriptDir=$(dirname "${0}")
 scriptName=$(basename "${0}")
 scriptNameWithoutExt=$(echo "${scriptName}" | cut -f1 -d '.')
@@ -60,15 +60,28 @@ if [ "$1" == "pvemanagerlib.js.dpkg-tmp" ]; then
     # wait a bit until the file has its permanent name
     sleep 15
 
-    # patch the files
-    cp /usr/share/pve-manager/ext6/pvemanagerlib.js /usr/share/pve-manager/ext6/pvemanagerlib.js.bak
-    sed -i -r -e "s/if \(data.status !== 'Active'\) \{/if (false) {/" /usr/share/pve-manager/ext6/pvemanagerlib.js >> /var/log/incron.log 2>&1
-    sed -i -r -e "s/You do not have a valid subscription for this server/This server is receiving updates from the Proxmox VE No-Subscription Repository/" /usr/share/pve-manager/ext6/pvemanagerlib.js >> /var/log/incron.log 2>&1
-    sed -i -r -e "s/No valid subscription/Community Edition/" /usr/share/pve-manager/ext6/pvemanagerlib.js >> /var/log/incron.log 2>&1
+    if [[ -e /usr/share/pve-manager/ext6/pvemanagerlib.js ]]; then
+        # patch the files
+        cp /usr/share/pve-manager/ext6/pvemanagerlib.js /usr/share/pve-manager/ext6/pvemanagerlib.js.bak
+        sed -i -r -e "s/if \(data.status !== 'Active'\) \{/if (false) {/" /usr/share/pve-manager/ext6/pvemanagerlib.js >> /var/log/incron.log 2>&1
+        sed -i -r -e "s/You do not have a valid subscription for this server/This server is receiving updates from the Proxmox VE No-Subscription Repository/" /usr/share/pve-manager/ext6/pvemanagerlib.js >> /var/log/incron.log 2>&1
+        sed -i -r -e "s/No valid subscription/Community Edition/" /usr/share/pve-manager/ext6/pvemanagerlib.js >> /var/log/incron.log 2>&1
 
-    # log  the changes
-    echo "Here are changes: " >> /var/log/incron.log
-    diff /usr/share/pve-manager/ext6/pvemanagerlib.js.bak /usr/share/pve-manager/ext6/pvemanagerlib.js >> /var/log/incron.log
+        # log  the changes
+        echo "Here are changes: " >> /var/log/incron.log
+        diff /usr/share/pve-manager/ext6/pvemanagerlib.js.bak /usr/share/pve-manager/ext6/pvemanagerlib.js >> /var/log/incron.log
+    elif [[ -e /usr/share/pve-manager/js/pvemanagerlib.js ]]; then
+        # patch the files
+        cp /usr/share/pve-manager/js/pvemanagerlib.js /usr/share/pve-manager/js/pvemanagerlib.js.bak
+        sed -i -r -e "s/if \(data.status !== 'Active'\) \{/if (false) {/" /usr/share/pve-manager/js/pvemanagerlib.js >> /var/log/incron.log 2>&1
+        sed -i -r -e "s/You do not have a valid subscription for this server/This server is receiving updates from the Proxmox VE No-Subscription Repository/" /usr/share/pve-manager/js/pvemanagerlib.js >> /var/log/incron.log 2>&1
+        sed -i -r -e "s/No valid subscription/Community Edition/" /usr/share/pve-manager/js/pvemanagerlib.js >> /var/log/incron.log 2>&1
+
+        # log  the changes
+        echo "Here are changes: " >> /var/log/incron.log
+        diff /usr/share/pve-manager/js/pvemanagerlib.js.bak /usr/share/pve-manager/js/pvemanagerlib.js >> /var/log/incron.log
+    fi     
+
 fi
 
 exit 0

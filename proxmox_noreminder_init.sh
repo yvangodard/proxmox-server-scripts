@@ -25,7 +25,7 @@ echo "${scriptName} launched..."
 echo ""
 
 echo "Nous allons installer CURL si ce n'est pas déjà fait..."
-apt-get install curl
+apt-get install curl -y
 echo ""
 
 # Changement du séparateur par défaut et mise à jour auto
@@ -53,7 +53,7 @@ IFS=$OLDIFS
 
 echo ""
 echo "Nous allons installer INCRON si ce n'est pas déjà fait..."
-apt-get install incron
+apt-get install incron -y
 
 echo ""
 echo "Nous ajoutons une table ROOT dans INCRON si ce n'est pas déjà fait..."
@@ -70,11 +70,17 @@ echo "Nous activons le script via INCRON"
 [[ ! -e /var/spool/incron/root ]] && \
 	touch /var/spool/incron/root && \
 	echo '/usr/share/pve-manager/ext6/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#' >> /var/spool/incron/root && \
+	echo '/usr/share/pve-manager/js/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#' >> /var/spool/incron/root && \
 	/etc/init.d/incron restart
 
 cat /var/spool/incron/root | grep '/usr/share/pve-manager/ext6/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#' > /dev/null 2>&1
 [ $? -ne 0 ] && \
 	echo "/usr/share/pve-manager/ext6/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#" >> /var/spool/incron/root && \
+	/etc/init.d/incron restart
+
+cat /var/spool/incron/root | grep '/usr/share/pve-manager/js/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#' > /dev/null 2>&1
+[ $? -ne 0 ] && \
+	echo "/usr/share/pve-manager/js/ IN_CREATE /etc/incron.scripts/proxmox_noreminder.sh $#" >> /var/spool/incron/root && \
 	/etc/init.d/incron restart
 
 echo ""
@@ -104,8 +110,31 @@ if [ $? -eq 0 ]; then
 else
 	echo ""
 	echo "Le fichier /usr/share/pve-manager/ext6/pvemanagerlib.js semble déjà patché."
-	echo "Nous arrêtons le processus ici, merci de vérifier manuellement."
-	exit 1
+	echo "Merci de vérifier manuellement."
+fi	
+
+cat /usr/share/pve-manager/js/pvemanagerlib.js | grep "data.status\ !==\ 'Active'" > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+	echo ""
+	echo "Nous faisons un backup du fichier /usr/share/pve-manager/js/pvemanagerlib.js vers /usr/share/pve-manager/js/pvemanagerlib.js.bak"
+	cp /usr/share/pve-manager/js/pvemanagerlib.js /usr/share/pve-manager/js/pvemanagerlib.js.bak
+
+	echo ""
+	echo "Nous patchons le fichier /usr/share/pve-manager/js/pvemanagerlib.js..."
+	sed -i -r -e "s/if \(data.status !== 'Active'\) \{/if (false) {/" /usr/share/pve-manager/js/pvemanagerlib.js 
+	sed -i -r -e "s/You do not have a valid subscription for this server/This server is receiving updates from the Proxmox VE No-Subscription Repository/" /usr/share/pve-manager/js/pvemanagerlib.js 
+	sed -i -r -e "s/No valid subscription/Community Edition/" /usr/share/pve-manager/js/pvemanagerlib.js
+
+	echo ""
+	echo "Voici les modifications apportées sur le fichier /usr/share/pve-manager/js/pvemanagerlib.js"
+	diff /usr/share/pve-manager/js/pvemanagerlib.js.bak /usr/share/pve-manager/js/pvemanagerlib.js
+
+	echo ""
+	echo "Porcessus terminé !"
+else
+	echo ""
+	echo "Le fichier /usr/share/pve-manager/js/pvemanagerlib.js semble déjà patché."
+	echo "Merci de vérifier manuellement."
 fi
 
 exit 0
